@@ -10,6 +10,7 @@
 package jotto;
 
 import javax.swing.*;
+import javax.swing.table.*;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.*;	
@@ -21,13 +22,13 @@ public class Main{
 		
 		// create Model and initialize it
 		JottoModel model = new JottoModel();
-		CustomTableModel tblmodel = new CustomTableModel();
+//		CustomTableModel tblmodel = new CustomTableModel();
 
 		// create View, tell it about model (and controller)
+		View view = new View(model);
 //		CustomTableView view = new CustomTableView(tblmodel);
-		CustomTableView view = new CustomTableView(tblmodel);
 		// tell Model about View. 
-		tblmodel.addObserver(view);
+		model.addObserver(view);
 		
 		// create second view ...
 		View2 view2 = new View2(model);
@@ -35,7 +36,7 @@ public class Main{
 		
 		// let all the views know that they're connected to the model
 		model.notifyObservers();
-		tblmodel.notifyObservers();
+//		tblmodel.notifyObservers();
 		
 		// create the window
 		JPanel p = new JPanel(new GridLayout(1,2));

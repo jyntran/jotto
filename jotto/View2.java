@@ -40,7 +40,8 @@ class View2 extends JPanel implements Observer {
 		// (this anonymous class is essentially the controller)
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.submitGuess();
+				String input = inputField.getText();
+				model.submitGuess(input);
 			}
 		});
 	}

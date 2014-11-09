@@ -17,7 +17,7 @@ public class Word extends Object
 {
    private String theWord;
    private int difficulty;
-	
+
    /** Read one word from an open file.  
     * <p>File format is a word followed by its difficulty, one pair per
     * line.  The difficulty must be in the range of 0..2.  The file cursor
@@ -69,7 +69,7 @@ public class Word extends Object
    public String getWord()
    {  return this.theWord;
    }
-   
+
    /*
     public boolean containsLetter(char letter)
     {  return this.theWord.indexOf(letter) >= 0;

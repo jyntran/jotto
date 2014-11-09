@@ -1,64 +1,41 @@
 package jotto;
 
 import javax.swing.*;
-import java.awt.FlowLayout;
-import java.awt.Color;
-import java.awt.event.*;
-import java.util.*;
+import javax.swing.table.*;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import java.util.Observable;
+import java.util.Observer;
 
 class View extends JPanel implements Observer {
+	private JottoModel model;
 
-	private JTable guessTable;
+	JTable table;
 
-	// the model that this view is showing
-	private WordListModel model;
+	public View(JottoModel model) {
+        super(new GridLayout(1,0));
+        this.model = model;
 
-	String[][] wordarr = new String[20][3];
+        table = new JTable(model.getTableModel());
+        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setFillsViewportHeight(true);
 
-	View(WordListModel model_) {
-		// create UI
-		setBackground(Color.WHITE);
-		setLayout(new FlowLayout(FlowLayout.LEFT));
+        //Create the scroll pane and add the table to it.
+        JScrollPane scrollPane = new JScrollPane(table);
 
-		//set table headings
-		String[] columnNames = {"Word",
-			"Exact",
-			"Partial"};
-		//set possible words
-//		System.out.println(model.words.getWord(0));
-
-//		WordList words = new WordList("words.txt");
-
-
-		for (int i=0; i<20; i++) {
-			Word word = model.words.getWord(i);
-			String wordstring = word.getWord();
-			wordarr[i][0] = wordstring;
-		}
-
-		guessTable = new JTable(wordarr,columnNames);
-//		add(new JScrollPane(guessTable));
-		this.add(guessTable);
-
-		// set the model
-		model = model_;
-
-		// setup the event to go to the "controller"
-		// (this anonymous class is essentially the controller)
-		addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					model.getGuess();
-				}
-		});
+        //Add the scroll pane to this panel.
+        add(scrollPane);
 	}
 
-	// Observer interface
-	@Override
-	public void update(Observable o, Object arg) {
-		System.out.println("View: updateView");
-		// just displays an 'X' for each counter value
-//		if (model.getGuess > 0)
-			//
-	}
+        // Observer interface
+        @Override
+        public void update(Observable arg0, Object arg1) {
+                System.out.println("View: update");
+//		model.getTableModel().fireTableDataChanged();
+//		model.getTableModel().fireTableRowsInserted();
+//		table.revalidate();
+		table.repaint();
+        }
+
 }
-
