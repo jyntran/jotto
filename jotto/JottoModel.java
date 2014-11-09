@@ -2,7 +2,10 @@ package jotto;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.lang.Character;
+import java.lang.String;
 
 import java.util.Observable;
 
@@ -12,12 +15,59 @@ public class JottoModel extends Observable {
 	public static final String[] LEVELS = {
 	  "Easy", "Medium", "Hard", "Any Difficulty"};
 
+	public int maxTries = 10;
+	public int tries = 0;
+
+	public String message = "Enter a word to guess.";
+
 	private String guess;
 
 	private WordList wordlist = new WordList("words.txt");
 	private String mystery = wordlist.randomWord().getWord();
 
-//	private ArrayList<Word> words = new ArrayList<Word>();
+	private boolean[] letters = new boolean[26];
+
+	public boolean[] getLetters() {
+		return letters;
+	}
+
+	public String asciiToString(int i) {
+		return Character.toString((char)(i+65));
+	}
+	public int charToAscii(char c) {
+		return (int)c;
+	}
+
+	public String printGuessedLetters(){
+		String result = "";
+		for (int i=0; i<26; i++) {
+			if (letters[i]){
+			result = result + (char)(i+65) + " ";
+			}
+		}
+		return result;
+	}
+	public String printNotGuessedLetters(){
+		String result = "";
+		for (int i=0; i<26; i++) {
+			if (!letters[i]){
+			result = result + (char)(i+65) + " ";
+			}
+		}
+		return result;
+	}
+
+	JottoModel() {
+		setChanged();
+	}
+
+	public boolean validateGuess(String s){
+		boolean inDictionary = false;
+		String guess = s.toUpperCase();
+		inDictionary = wordlist.contains(guess);
+		return (guess.length() == NUM_LETTERS && inDictionary);
+	}
+
 	private ArrayList<Guess> guesses = new ArrayList<Guess>();
 	private boolean DEBUG = true;
 
@@ -25,22 +75,10 @@ public class JottoModel extends Observable {
                                         "Exact",
 					"Partial"};
 
-	JottoModel() {
-		setChanged();
-	}
-/*
-	public ArrayList<Word> getWords() {
-		return words;
-	}
-*/
 	public ArrayList<Guess> getGuesses() {
 		return guesses;
 	}
-/*
-	public void setWords(ArrayList<Word> newwords) {
-		words = newwords;
-	}
-*/
+
 	public void setGuesses(ArrayList<Guess> newguesses) {
 		guesses = newguesses;
 	}
@@ -69,18 +107,27 @@ public class JottoModel extends Observable {
 		return (guess.equals(mystery));
 	}
 
+	public boolean alreadyGuessed(String s){
+		for (int i=0; i<guesses.size(); i++){
+			if (guesses.get(i).getWord().equals(s))
+				return true;
+		}
+		return false;
+	}
+
 	public int findExact(){
 		int exactTotal = 0;
 		String mystery = getMystery();
-//    		System.out.println(mystery);
 		String guess = getGuess();
-  //  		System.out.println(guess);
 		for (int i = 0; i < mystery.length(); i++){
     			char cg = guess.charAt(i);
     			char cm = mystery.charAt(i);
 			if (cg == cm) {
 				exactTotal++;
 			}
+			letters[(int)cg -65] = true;
+			setChanged();
+			notifyObservers();
 		}
 		return exactTotal;
 	}
@@ -103,22 +150,28 @@ public class JottoModel extends Observable {
 	}
 
 	public void submitGuess(String guessedWord){
+		if (!validateGuess(guessedWord)) {
+			message = "The word is not valid.";
+		} else if (alreadyGuessed(guessedWord)) {
+			message = "You already guessed this word.";
+		} else {
 		setGuess(guessedWord);
-		System.out.println("mystery: " + mystery);
-		System.out.println("guess: " + guessedWord);
 		int exact = findExact();
 		int partial = findPartial();
-		System.out.println("E: " + exact + " P: " + partial);
 		Guess g = new Guess(guessedWord, exact, partial);
-//		ArrayList<Word> newwords = getWords();
 		ArrayList<Guess> newguesses = getGuesses();
 		newguesses.add(g);
 		setGuesses(newguesses);
-		setChanged();
-		notifyObservers();
+		tries++;
 		if (isGuessCorrect()) {
 			System.out.println("The word has been guessed!");
+		} else if (tries == maxTries) {
+			System.out.println("Game over. The word was: "
+				+ getMystery());
 		}
+		}
+		setChanged();
+		notifyObservers();
 	}
 
 	/*

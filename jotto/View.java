@@ -18,7 +18,7 @@ class View extends JPanel implements Observer {
         this.model = model;
 
         table = new JTable(model.getTableModel());
-        table.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        table.setPreferredScrollableViewportSize(new Dimension(200, 200));
         table.setFillsViewportHeight(true);
 
         //Create the scroll pane and add the table to it.
@@ -31,10 +31,8 @@ class View extends JPanel implements Observer {
         // Observer interface
         @Override
         public void update(Observable arg0, Object arg1) {
-                System.out.println("View: update");
-//		model.getTableModel().fireTableDataChanged();
-//		model.getTableModel().fireTableRowsInserted();
-//		table.revalidate();
+//                System.out.println("View: update");
+		table.revalidate();
 		table.repaint();
         }
 

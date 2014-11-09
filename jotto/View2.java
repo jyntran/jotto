@@ -3,8 +3,8 @@ package jotto;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.util.Observable;
 import java.util.Observer;
@@ -14,6 +14,7 @@ class View2 extends JPanel implements Observer {
 	// the view's main user interface
 	private JButton button;
 	private JTextField inputField;
+	private JLabel message;
 
 	// the model that this view is showing
 	private JottoModel model;
@@ -21,17 +22,19 @@ class View2 extends JPanel implements Observer {
 	View2(JottoModel model_) {
 		// create the view UI
 		button = new JButton("Submit");
-		button.setMaximumSize(new Dimension(100, 30));
-		button.setPreferredSize(new Dimension(100, 30));
-		// a GridBagLayout with default constraints centres
-		// the widget in the window
-		this.setLayout(new GridBagLayout());
-		this.add(button, new GridBagConstraints());
+		message = new JLabel("Enter a word to guess.");
+
+		this.setLayout(new GridLayout(2,1));
+
+		JPanel inputPanel = new JPanel();
+		inputPanel.setLayout(new FlowLayout());
+
 		inputField = new JTextField();
 		inputField.setColumns(10);
-		inputField.setMaximumSize(new Dimension(500, 500));
-		this.add(inputField);
-		this.add(button);
+		inputPanel.add(inputField);
+		inputPanel.add(button);
+		this.add(inputPanel);
+		this.add(message);
 
 		// set the model
 		model = model_;
@@ -41,16 +44,17 @@ class View2 extends JPanel implements Observer {
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String input = inputField.getText();
-				model.submitGuess(input);
+				model.submitGuess(input.toUpperCase());
 			}
 		});
 	}
 
-	// Observer interface 
+	// Observer interface
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		System.out.println("View2: update");
-//		button.setText(Integer.toString(model.getCounterValue()));
+//		System.out.println("View2: update");
+		message.setText(model.message);
+		model.message = "";
 	}
 
 
